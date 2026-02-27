@@ -39,22 +39,22 @@ This isn't just a basic CRUD app; it's built to mimic real-world enterprise stan
    cd TaskFlow-REST-API
    Run the server using the Maven Wrapper (no local Maven install required):
 
-````
+
 2. Boot the server:
 
 For Linux / macOS:
 
-Bash  
+```Bash  
 ./mvnw spring-boot:run
-
+```
 For Windows (Command Prompt / PowerShell):
-
+```
 mvnw.cmd spring-boot:run
 
 The embedded Tomcat server will automatically start on http://localhost:8080.
-
+```
 3. Verify it works:
    Open a new terminal and send a test request to ensure the database and validation are running:
 
-Bash
+```Bash
 curl -X GET http://localhost:8080/tasks
