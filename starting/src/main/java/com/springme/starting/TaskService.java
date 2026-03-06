@@ -18,25 +18,31 @@ public class TaskService
         System.out.println(">>> 1. TaskService Constructor Called! <<<");
         System.out.println("=========================================");
     }
-    public Iterable<Task> getTasks()
+    public Iterable<TaskResponseDTO> getTasks()
     {
-        return taskRepository.findAll();
+        Iterable<Task> tasks = taskRepository.findAll();
+        return ListtoTaskResponseDTO(tasks);
     }
-    public Task addTask(Task task)
+    public TaskResponseDTO addTask(TaskRequestDTO task)
     {
-        return taskRepository.save(task);
+        Task turnRequestoTask = RequesttoTask(task);
+        Task finalTs = taskRepository.save(turnRequestoTask);
+        return convertToTaskResponseDTO(finalTs);
     }
-    public Iterable<Task> findDoneTasks(boolean isdone)
+    public Iterable<TaskResponseDTO> findDoneTasks(boolean isdone)
     {
-        return taskRepository.findByIsDone(isdone);
+        Iterable<Task> ts = taskRepository.findByIsDone(isdone);
+        return  (ListtoTaskResponseDTO(ts));
     }
-    public Iterable<Task> getByDescription(String description)
+    public Iterable<TaskResponseDTO> getByDescription(String description)
     {
-        return taskRepository.findByDescriptionContainingIgnoreCase(description);
+        Iterable<Task> ts =  taskRepository.findByDescriptionContainingIgnoreCase(description);
+        return  (ListtoTaskResponseDTO(ts));
     }
-    public Iterable<Task> getbyDescriptionAndIsDone(String description, boolean isdone)
+    public Iterable<TaskResponseDTO> getbyDescriptionAndIsDone(String description, boolean isdone)
     {
-        return taskRepository.findByDescriptionContainingIgnoreCaseAndIsDone(description, isdone);
+        Iterable<Task> ts = taskRepository.findByDescriptionContainingIgnoreCaseAndIsDone(description, isdone);
+        return  ListtoTaskResponseDTO(ts);
     }
     public int deleteTask(Long id)
     {
@@ -45,9 +51,10 @@ public class TaskService
         return 1;
 
     }
-    public Task getTaskById(Long id)//Key point: .orElseThrow() turns an Optional<Task> into a Task. Returning it as Optional<Task> is wrong; it’s already “unwrapped.”
+    public TaskResponseDTO getTaskById(Long id)//Key point: .orElseThrow() turns an Optional<Task> into a Task. Returning it as Optional<Task> is wrong; it’s already “unwrapped.”
     {
-        return taskRepository.findById(id).orElseThrow(()-> new TaskNotFoundExp(id));
+        Task ts = taskRepository.findById(id).orElseThrow(()-> new TaskNotFoundExp(id));
+        return  convertToTaskResponseDTO(ts);
     }
 
     public void UpdateTask(Long id, Task task)
@@ -58,5 +65,26 @@ public class TaskService
             taskRepository.save(task1);
             System.out.println("Updated task " + id + "\n");
     }
+    public TaskResponseDTO convertToTaskResponseDTO(Task task)
+    {
+        return new TaskResponseDTO(task.getId(), task.getDescription(), task.getIsDone());
+    }
+    public Iterable<TaskResponseDTO> ListtoTaskResponseDTO(Iterable<Task> tasks)
+    {
+        List<TaskResponseDTO> dtos = new ArrayList<>();
+        for (Task ts : tasks)
+        {
+            dtos.add(convertToTaskResponseDTO(ts));
+        }
+        return  dtos;
+    }
+    public Task RequesttoTask(TaskRequestDTO request)
+    {
+        Task ts =  new Task();
+
+        ts.setDescription(request.getDescription());
+        return ts;
+    }
+
 
 }
