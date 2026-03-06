@@ -20,7 +20,7 @@ public class TaskController
         System.out.println("===========================================");
     }
     @GetMapping("/tasks")
-    public ResponseEntity<Iterable<Task>> getTasks(@RequestParam(required = false) String search,  @RequestParam(required = false) Boolean isDone)
+    public ResponseEntity<Iterable<TaskResponseDTO>> getTasks(@RequestParam(required = false) String search,  @RequestParam(required = false) Boolean isDone)
     {
         if (isDone != null && search != null)
             return ResponseEntity.ok(taskService.getbyDescriptionAndIsDone(search, isDone));
@@ -31,17 +31,17 @@ public class TaskController
         return ResponseEntity.ok(taskService.getTasks());
     }
     @PostMapping("/tasks")
-    public ResponseEntity<Task> addTask(@Valid @RequestBody Task task)
+    public ResponseEntity<TaskResponseDTO> addTask(@Valid @RequestBody TaskRequestDTO incomingTask)
     {
-        Task ts = taskService.addTask(task);
+        TaskResponseDTO ts = taskService.addTask(incomingTask);
         System.out.println("Task added!\n");
-        return ResponseEntity.status(HttpStatus.CREATED).body(ts);//201
+        return ResponseEntity.status(HttpStatus.CREATED).body(ts);// http code for Created 201
     }
 
     @GetMapping("/tasks/{id}")
-    public ResponseEntity<Task> getTaskbyId(@PathVariable Long id)
+    public ResponseEntity<TaskResponseDTO> getTaskbyId(@PathVariable Long id)
     {
-        Task task = taskService.getTaskById(id);
+        TaskResponseDTO task = taskService.getTaskById(id);
         return ResponseEntity.ok().body(task);
     }
 
@@ -52,9 +52,9 @@ public class TaskController
         return "Task " + id + " deleted successfully\n";
     }
     @PutMapping("/tasks/{id}")
-    public String updateTask(@PathVariable Long id, @Valid @RequestBody Task task)
+    public String updateTask(@PathVariable Long id, @Valid @RequestBody Task IncomingTask)
     {
-        taskService.UpdateTask(id, task);
+        taskService.UpdateTask(id, IncomingTask);
         return "Task " + id + " updated successfully\n";
     }
 
