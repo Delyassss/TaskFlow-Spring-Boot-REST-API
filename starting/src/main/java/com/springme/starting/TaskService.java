@@ -1,4 +1,6 @@
 package com.springme.starting;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -18,10 +20,14 @@ public class TaskService
         System.out.println(">>> 1. TaskService Constructor Called! <<<");
         System.out.println("=========================================");
     }
-    public Iterable<TaskResponseDTO> getTasks()
+    public Page<TaskResponseDTO> getTasks(Pageable pageable)
     {
-        Iterable<Task> tasks = taskRepository.findAll();
-        return ListtoTaskResponseDTO(tasks);
+        Page <Task> rawtasks = taskRepository.findAll(pageable);
+
+        Page<TaskResponseDTO> tasksWithMetada = rawtasks.map(task -> convertToTaskResponseDTO(task));
+
+
+        return tasksWithMetada;
     }
     public TaskResponseDTO addTask(TaskRequestDTO task)
     {
@@ -29,20 +35,26 @@ public class TaskService
         Task finalTs = taskRepository.save(turnRequestoTask);
         return convertToTaskResponseDTO(finalTs);
     }
-    public Iterable<TaskResponseDTO> findDoneTasks(boolean isdone)
+    public Page<TaskResponseDTO> findDoneTasks(Boolean isdone,  Pageable pageable)
     {
-        Iterable<Task> ts = taskRepository.findByIsDone(isdone);
-        return  (ListtoTaskResponseDTO(ts));
+        Page<Task> ts = taskRepository.findByIsDone(isdone, pageable);
+        Page<TaskResponseDTO>  tasksWithMetada = ts.map(task -> convertToTaskResponseDTO(task));
+
+        return  tasksWithMetada;
     }
-    public Iterable<TaskResponseDTO> getByDescription(String description)
+    public Page<TaskResponseDTO> getByDescription(String description,  Pageable pageable)
     {
-        Iterable<Task> ts =  taskRepository.findByDescriptionContainingIgnoreCase(description);
-        return  (ListtoTaskResponseDTO(ts));
+        Page<Task> ts =  taskRepository.findByDescriptionContainingIgnoreCase(description , pageable);
+        Page<TaskResponseDTO>  tasksWithMetada = ts.map(task -> convertToTaskResponseDTO(task));
+
+        return tasksWithMetada;
     }
-    public Iterable<TaskResponseDTO> getbyDescriptionAndIsDone(String description, boolean isdone)
+    public Page<TaskResponseDTO> getbyDescriptionAndIsDone(String description, Boolean isdone , Pageable pageable)
     {
-        Iterable<Task> ts = taskRepository.findByDescriptionContainingIgnoreCaseAndIsDone(description, isdone);
-        return  ListtoTaskResponseDTO(ts);
+        Page <Task> ts = taskRepository.findByDescriptionContainingIgnoreCaseAndIsDone(description, isdone,  pageable);
+        Page<TaskResponseDTO>  tasksWithMetada = ts.map(task -> convertToTaskResponseDTO(task));
+
+        return  tasksWithMetada;
     }
     public int deleteTask(Long id)
     {

@@ -1,4 +1,8 @@
 package com.springme.starting;
+import org.springframework.boot.context.properties.bind.DefaultValue;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,15 +24,20 @@ public class TaskController
         System.out.println("===========================================");
     }
     @GetMapping("/tasks")
-    public ResponseEntity<Iterable<TaskResponseDTO>> getTasks(@RequestParam(required = false) String search,  @RequestParam(required = false) Boolean isDone)
+    public ResponseEntity<Page<TaskResponseDTO>> getTasks(@RequestParam(required = false) String search,
+                                                          @RequestParam(required = false) Boolean isDone,
+                                                          @RequestParam(required = false, defaultValue = "0") Integer page,
+                                                          @RequestParam(required = false , defaultValue = "5")  Integer pageSize)
     {
+        Pageable pageable = PageRequest.of(page, pageSize);
+
         if (isDone != null && search != null)
-            return ResponseEntity.ok(taskService.getbyDescriptionAndIsDone(search, isDone));
+            return ResponseEntity.ok(taskService.getbyDescriptionAndIsDone(search, isDone, pageable));
         else if (isDone != null)
-            return ResponseEntity.ok(taskService.findDoneTasks(isDone));
+            return ResponseEntity.ok(taskService.findDoneTasks(isDone, pageable));
         else if (search != null)
-            return ResponseEntity.ok(taskService.getByDescription(search));
-        return ResponseEntity.ok(taskService.getTasks());
+            return ResponseEntity.ok(taskService.getByDescription(search , pageable));
+        return ResponseEntity.ok(taskService.getTasks(pageable));
     }
     @PostMapping("/tasks")
     public ResponseEntity<TaskResponseDTO> addTask(@Valid @RequestBody TaskRequestDTO incomingTask)

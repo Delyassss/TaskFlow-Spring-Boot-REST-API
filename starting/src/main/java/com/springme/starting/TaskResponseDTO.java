@@ -2,7 +2,7 @@ package com.springme.starting;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class TaskResponseDTO
+public class TaskResponseDTO // the main for this is to restrict the users from accessing sensitive info
 {
     private long id;
     private String description;
