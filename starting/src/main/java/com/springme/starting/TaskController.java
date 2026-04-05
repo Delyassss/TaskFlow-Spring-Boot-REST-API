@@ -15,13 +15,15 @@ import java.util.Optional;
 public class TaskController
 {
     private final TaskService taskService;
+    private final TaskRepository taskRepository;
 
-    public TaskController(TaskService taskService)
+    public TaskController(TaskService taskService, TaskRepository taskRepository)
     {
         this.taskService = taskService;
         System.out.println("===========================================");
         System.out.println(">>> 2. TaskController Constructor Called! <<<");
         System.out.println("===========================================");
+        this.taskRepository = taskRepository;
     }
     @GetMapping("/tasks")
     public ResponseEntity<Page<TaskResponseDTO>> getTasks(@RequestParam(required = false) String search,
